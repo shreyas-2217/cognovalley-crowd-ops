@@ -355,7 +355,7 @@
     for (let row = 0; row < rows; row += 1) {
       for (let col = 0; col < cols; col += 1) {
         const value = values[row * cols + col] || 0;
-        if (value < 0.08) continue;
+        if (value < 0.06) continue;
         context.fillStyle = heatColor(value);
         context.fillRect(
           col * cellWidth,
@@ -543,16 +543,19 @@
   }
 
   function heatColor(value) {
+    // Gamma-shift each weight so the long tail of lightly-used cells still
+    // reads on screen, then use the same tone for colour and alpha.
+    const tone = Math.pow(value, 0.6);
     const stops = [
       [0.0, [34, 211, 238]],
-      [0.55, [251, 191, 36]],
+      [0.5, [251, 191, 36]],
       [1.0, [251, 113, 133]],
     ];
     let lower = stops[0];
     let upper = stops[stops.length - 1];
 
     for (let index = 0; index < stops.length - 1; index += 1) {
-      if (value >= stops[index][0] && value <= stops[index + 1][0]) {
+      if (tone >= stops[index][0] && tone <= stops[index + 1][0]) {
         lower = stops[index];
         upper = stops[index + 1];
         break;
@@ -560,7 +563,7 @@
     }
 
     const span = Math.max(1e-6, upper[0] - lower[0]);
-    const ratio = (value - lower[0]) / span;
+    const ratio = (tone - lower[0]) / span;
     const rgb = lower[1].map(function (channel, index) {
       return Math.round(channel + (upper[1][index] - channel) * ratio);
     });
@@ -573,7 +576,7 @@
       "," +
       rgb[2] +
       "," +
-      (0.24 + 0.66 * value).toFixed(2) +
+      (0.22 + 0.78 * tone).toFixed(2) +
       ")"
     );
   }

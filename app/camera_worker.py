@@ -192,7 +192,9 @@ class CameraWorker:
         return filename
 
     def _update_heatmap(self, tracks: list[Track], frame_w: int, frame_h: int) -> list[float]:
-        self._heat *= 0.97
+        # Slow decay keeps a visible trail of recent movement: at ~7 fps a cell
+        # loses half its weight roughly every 20 seconds.
+        self._heat *= 0.995
         for track in tracks:
             col = min(HEAT_COLS - 1, max(0, int(track.cx / max(1, frame_w) * HEAT_COLS)))
             row = min(HEAT_ROWS - 1, max(0, int(track.cy / max(1, frame_h) * HEAT_ROWS)))

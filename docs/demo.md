@@ -123,7 +123,7 @@ Do this in order; each item is visible on screen.
    bar is count over capacity; the status changes from ok to warning to
    capacity."
 4. **Heat map.** Toggle it with the **Heat** control (or open `/#heat`). "This is
-   a 32 by 18 accumulator that decays 3 percent per frame and adds one at each
+   a 32 by 18 accumulator that decays 0.5 percent per frame and adds one at each
    person's centre. It shows where the crowd concentrates over time, not just
    this frame."
 5. **Trend chart.** "Sixty seconds of total occupancy. Spikes are visible here
