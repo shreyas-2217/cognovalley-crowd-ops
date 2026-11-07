@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crowd Operations · CognoValley</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 17V9" /><path d="M8 17V5" /><path d="M13 17v-6" /><path d="M18 17V7" /><path d="M3 21h18" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <strong>Crowd Operations</strong>
+          <span>Track A · Density &amp; Bottleneck Analytics</span>
+        </div>
+      </div>
+
+      <div class="topbar-meta">
+        <div class="source-pill" title="Active video source">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="sourceName">Connecting</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">FPS</span>
+          <span class="metric-value mono" id="fpsValue">0.0</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">EVENTS</span>
+          <span class="metric-value mono" id="eventTotal">0</span>
+        </div>
+        <div class="metric clock">
+          <span class="metric-label">LOCAL</span>
+          <span class="metric-value mono" id="clock">--:--:--</span>
+        </div>
+        <div class="live-badge" id="liveBadge"><span class="live-dot"></span><span id="liveText">LIVE</span></div>
+      </div>
+    </header>
+
+    <div class="shell">
+      <nav class="rail" aria-label="Primary navigation">
+        <button class="rail-item active" title="Live analytics">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12h4l2-7 4 14 2-7h6" />
+          </svg>
+          <span>Live</span>
+        </button>
+        <button class="rail-item" title="Event log" id="railEvents">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 6h13M8 12h13M8 18h13" /><path d="M3 6h.01M3 12h.01M3 18h.01" />
+          </svg>
+          <span>Events</span>
+        </button>
+        <button class="rail-item" title="Zone configuration">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+          <span>Zones</span>
+        </button>
+        <div class="rail-spacer"></div>
+        <div class="rail-health" id="railHealth" title="Stream health"></div>
+      </nav>
+
+      <div class="workspace">
+        <main class="main-grid">
+          <section class="panel video-panel">
+            <div class="panel-head">
+              <div>
+                <span class="eyebrow">LIVE ANALYSIS</span>
+                <h1 id="cameraTitle">Camera 01 · Pedestrian street</h1>
+              </div>
+              <div class="panel-head-right">
+                <span class="pill">YOLO11n · ByteTrack</span>
+              </div>
+            </div>
+
+            <div class="video-wrap" id="videoWrap">
+              <img id="video" src="/video" alt="Live annotated video stream" />
+              <canvas id="heatmap" class="layer heatmap" aria-hidden="true"></canvas>
+              <svg id="zoneOverlay" class="layer zones" viewBox="0 0 160 90" preserveAspectRatio="none" aria-label="Zone overlay"></svg>
+              <div class="video-shade"></div>
+
+              <div class="alert-banner" id="alertBanner" hidden>
+                <div class="alert-icon">!</div>
+                <div class="alert-copy">
+                  <strong id="alertTitle">Congestion alert</strong>
+                  <span id="alertText"></span>
+                </div>
+              </div>
+
+              <div class="video-empty" id="videoEmpty">
+                <div class="spinner"></div>
+                <span id="videoEmptyText">Connecting to stream…</span>
+              </div>
+
+              <div class="layer-controls">
+                <button class="chip active" data-layer="zones">Zones</button>
+                <button class="chip" data-layer="heat">Heatmap</button>
+              </div>
+
+              <div class="video-footer">
+                <span class="rec"><span></span>ANALYTICS ON</span>
+                <span class="mono" id="frameMeta">—</span>
+              </div>
+            </div>
+          </section>
+
+          <aside class="side">
+            <section class="kpi-grid" aria-label="Key metrics">
+              <article class="kpi panel">
+                <span class="kpi-label">Occupancy</span>
+                <div class="kpi-value" id="kpiOccupancy">0</div>
+                <span class="kpi-note">people inside configured zones</span>
+              </article>
+              <article class="kpi panel">
+                <span class="kpi-label">Peak session</span>
+                <div class="kpi-value" id="kpiPeak">0</div>
+                <span class="kpi-note">highest simultaneous count</span>
+              </article>
+              <article class="kpi panel">
+                <span class="kpi-label">Active alerts</span>
+                <div class="kpi-value" id="kpiAlerts">0</div>
+                <span class="kpi-note">zones at warning or critical</span>
+              </article>
+              <article class="kpi panel">
+                <span class="kpi-label">Processing</span>
+                <div class="kpi-value" id="kpiFps">0.0</div>
+                <span class="kpi-note">measured frames per second</span>
+              </article>
+            </section>
+
+            <section class="panel zones-panel">
+              <div class="panel-head compact">
+                <div>
+                  <span class="eyebrow">CAPACITY</span>
+                  <h2>Zone pressure</h2>
+                </div>
+                <span class="muted mono" id="zoneCount">0 zones</span>
+              </div>
+              <div class="zone-list" id="zoneList"></div>
+            </section>
+
+            <section class="panel chart-panel">
+              <div class="panel-head compact">
+                <div>
+                  <span class="eyebrow">TREND</span>
+                  <h2>Headcount · last 60s</h2>
+                </div>
+                <span class="muted mono" id="chartNow">0</span>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="headcountChart"></canvas>
+              </div>
+            </section>
+          </aside>
+        </main>
+
+        <section class="panel events-panel" id="eventsPanel">
+          <div class="panel-head compact">
+            <div>
+              <span class="eyebrow">OPERATOR LOG</span>
+              <h2>Events</h2>
+            </div>
+            <div class="event-filters" id="eventFilters">
+              <button class="chip active" data-filter="all">All</button>
+              <button class="chip" data-filter="critical">Critical</button>
+              <button class="chip" data-filter="warning">Warning</button>
+              <button class="chip" data-filter="info">Info</button>
+              <button class="chip chip-clear" id="clearEvents" title="Delete every logged event and evidence image">Clear</button>
+            </div>
+          </div>
+          <div class="event-table">
+            <div class="event-head">
+              <span>Time</span><span>Zone</span><span>Event</span><span>Count</span><span>Evidence</span>
+            </div>
+            <div class="event-body" id="eventBody"></div>
+            <div class="event-empty" id="eventEmpty">
+              No events yet — the log will populate when a threshold is crossed.
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/vendor/chart.umd.min.js"></script>
+  <script src="/static/js/charts.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
