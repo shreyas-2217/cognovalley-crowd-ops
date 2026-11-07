@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/snapshots/*.jpg
+data/clips/raw/
+data/clips/*.mp4
+data/preview/
+data/*.db
+*.pt
+cognovalley.db
+.DS_Store

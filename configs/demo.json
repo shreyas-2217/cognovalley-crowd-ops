@@ -1,0 +1,46 @@
+{
+  "source": "data/clips/demo-crowd.webm",
+  "camera": {"name": "Camera 01 · Night market street"},
+  "zones": [
+    {
+      "name": "West lane",
+      "polygon": [[0.02, 0.02], [0.32, 0.02], [0.32, 0.98], [0.02, 0.98]],
+      "capacity": 8,
+      "color": [34, 211, 238]
+    },
+    {
+      "name": "Centre lane",
+      "polygon": [[0.34, 0.02], [0.62, 0.02], [0.62, 0.98], [0.34, 0.98]],
+      "capacity": 7,
+      "color": [56, 189, 248]
+    },
+    {
+      "name": "East lane",
+      "polygon": [[0.64, 0.02], [0.98, 0.02], [0.98, 0.98], [0.64, 0.98]],
+      "capacity": 6,
+      "color": [45, 212, 191]
+    }
+  ],
+  "detector": {
+    "model": "yolo11n.pt",
+    "conf": 0.30,
+    "iou": 0.50,
+    "min_box_height": 18
+  },
+  "rules": {
+    "warning_ratio": 0.6,
+    "alert_seconds": 1.5,
+    "dwell_seconds": 30.0,
+    "cooldown_seconds": 30.0
+  },
+  "video": {
+    "width": 1280,
+    "jpeg_quality": 82,
+    "target_fps": 10,
+    "pixels_per_meter": 70
+  },
+  "storage": {
+    "db_path": "data/demo.db",
+    "snapshot_dir": "data/snapshots"
+  }
+}

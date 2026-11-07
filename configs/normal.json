@@ -1,0 +1,46 @@
+{
+  "source": "data/clips/normal-corridor.avi",
+  "camera": {"name": "Camera 02 · Courtyard baseline"},
+  "zones": [
+    {
+      "name": "North walk",
+      "polygon": [[0.13, 0.06], [0.39, 0.06], [0.39, 0.96], [0.13, 0.96]],
+      "capacity": 10,
+      "color": [34, 211, 238]
+    },
+    {
+      "name": "Centre walk",
+      "polygon": [[0.41, 0.06], [0.63, 0.06], [0.63, 0.96], [0.41, 0.96]],
+      "capacity": 10,
+      "color": [56, 189, 248]
+    },
+    {
+      "name": "South walk",
+      "polygon": [[0.65, 0.06], [0.87, 0.06], [0.87, 0.96], [0.65, 0.96]],
+      "capacity": 10,
+      "color": [45, 212, 191]
+    }
+  ],
+  "detector": {
+    "model": "yolo11n.pt",
+    "conf": 0.40,
+    "iou": 0.50,
+    "min_box_height": 30
+  },
+  "rules": {
+    "warning_ratio": 0.8,
+    "alert_seconds": 3.0,
+    "dwell_seconds": 120.0,
+    "cooldown_seconds": 30.0
+  },
+  "video": {
+    "width": 1280,
+    "jpeg_quality": 82,
+    "target_fps": 10,
+    "pixels_per_meter": 50
+  },
+  "storage": {
+    "db_path": "data/normal.db",
+    "snapshot_dir": "data/snapshots"
+  }
+}
