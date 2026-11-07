@@ -355,7 +355,7 @@
     for (let row = 0; row < rows; row += 1) {
       for (let col = 0; col < cols; col += 1) {
         const value = values[row * cols + col] || 0;
-        if (value < 0.12) continue;
+        if (value < 0.08) continue;
         context.fillStyle = heatColor(value);
         context.fillRect(
           col * cellWidth,
@@ -573,7 +573,7 @@
       "," +
       rgb[2] +
       "," +
-      (0.06 + 0.4 * value).toFixed(2) +
+      (0.24 + 0.66 * value).toFixed(2) +
       ")"
     );
   }
