@@ -59,20 +59,25 @@ open as a PDF or image in a third tab, and the README open in an editor.
    python -m app.main --config configs\normal.json --port 5001 --reset
    ```
 
-   Open <http://127.0.0.1:5001> after **15–20 s** (cold start is slower with the
-   demo worker already running) and confirm **0 events**, occupancy around
-   **4–8**.
+   Open <http://127.0.0.1:5001> after **15–20 s** and confirm **0 events**,
+   occupancy around **4–8**, badge **LIVE**.
 
-   **Two inference workers share this CPU.** Measured with both running:
-   **4.0–4.5 FPS each**, down from 5–7 for the demo alone, and a baseline pass
-   stretches to **~3.2 minutes**. So do not cold-start it at 8:00 and wait for a
-   full pass — it will not finish inside a 2-minute section. Start it at **7:00**
-   instead, once the crowd pass has ended, and it will have run about two and a
-   half clean minutes by the time you switch to it.
+   **Then stop it again.** Two inference workers share this CPU and drop each
+   other to **4.0–4.5 FPS each** (measured), so you do not want both running
+   during the live crowd section:
 
-9. Leave both tabs open. Do not leave the crowd tab running for many minutes
-   before you start: the event log will fill and the clip will loop. If it does,
-   press **Clear** in the event log and let one fresh pass run (~60 s).
+   ```powershell
+   Get-NetTCPConnection -LocalPort 5001 -State Listen -ErrorAction SilentlyContinue |
+     ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
+   ```
+
+   It comes back at the **5:20** cue in the run of show.
+
+9. Leave both browser tabs open. The baseline tab will show **OFFLINE** until
+   5:20 — that is correct, and the badge flips back to LIVE on its own when the
+   server starts. Do not leave the crowd tab running for many minutes before you
+   start: the event log will fill and the clip will loop. If it does, press
+   **Clear** in the event log and let one fresh pass run (~60 s).
 
 ---
 
@@ -136,6 +141,7 @@ Do this in order; each item is visible on screen.
    comes from ByteTrack. The yellow tint marks the zones."
 2. **KPI row.** Point out current occupancy, peak, alert count and measured FPS.
    Say the measured FPS out loud, e.g. "about 7 frames per second on this CPU".
+   Do it now, before 5:20: the number drops to ~4.3 once the baseline starts.
 3. **Zone panel.** "West lane, Centre lane, East lane. Each has a capacity. The
    bar is count over capacity; the status changes from ok to warning to
    capacity."
@@ -150,7 +156,8 @@ Do this in order; each item is visible on screen.
    operator sees." Open the snapshot.
 7. **Clear and fresh pass.** Press **Clear**, confirm. "The log, the evidence
    images and the session counter reset, so we can show a clean run." Let one
-   pass play — about **60 s** at the measured frame rate, not 35 s.
+   pass play — about **60 s** with the demo alone, **~80 s** now that the
+   baseline is sharing the CPU.
 
 Expected within one fresh pass of the 35 s clip:
 
@@ -161,25 +168,27 @@ Expected within one fresh pass of the 35 s clip:
   a 60 s window ranged from **1 to 7** live, and a full pass produced **7** on a
   quiet machine and **16** when loaded. The first event after a Clear arrived in
   **7.9 s**. State a range, not an exact number.
-- FPS **5–7** with this tab open;
-- one pass takes about **60 s** at 6 FPS, because the worker runs below its
-  10 FPS target and skips two of every three source frames. Wait for the pass to
-  end before the next section, or the Clear demo will not have shown a full loop.
+- FPS **5–7** with this tab open *and the demo alone* — it drops to ~4.3 once
+  the baseline starts at 5:20, so **quote the FPS number before 5:20**;
+- one pass takes about **60 s** at 6 FPS, or **~80 s** while both workers run,
+  because the worker processes below its 10 FPS target and skips two of every
+  three source frames. Let the pass finish before switching to the baseline tab.
 
 Say: **"The thresholds are in `configs/demo.json`, not in the code. The same
 engine runs the next clip with different numbers."**
 
-**Cue at 7:00 — after the fresh pass finishes, start the baseline** (second
-terminal):
+**Cue at 5:20 — start the baseline** (second terminal), after you have quoted the
+FPS figure and before the Clear demo:
 
 ```powershell
 python -m app.main --config configs\normal.json --port 5001 --reset
 ```
 
-It needs 15–20 s to warm up and about three minutes for a full pass, so starting
-it once the crowd pass has ended is what makes the 8:00 section honest without
-stretching the pass to ~81 s. The demo tab drops to ~4.3 FPS from here; you have
-already quoted the FPS number.
+It takes 15–20 s to warm up, so it is live around 5:40, and at 4.1 FPS a full
+795-frame pass ends at about **8:53** — inside the baseline section. That is what
+lets you say "a complete pass, zero events" instead of "two minutes so far".
+From here the crowd tab runs at ~4.3 FPS, and the Clear pass below takes ~80 s
+instead of ~60 s.
 
 ### 8:00–10:00 — Baseline / false-positive check (tab 5001)
 
@@ -196,11 +205,10 @@ Point at:
 
 - status **LIVE**, occupancy around **4–8** (p50 5, max 8 in testing);
 - every zone status **ok**;
-- **0 events** in the ~2.5 minutes it has been running since 7:00. A complete
-  795-frame pass takes **~3.2 minutes** at this shared frame rate and produced
-  **0 events** in every full-pass test, live and offline. Say "no events in two
-  and a half minutes of running" — do not claim a finished pass you did not watch
-  finish.
+- **0 events**. Started at 5:20, it has been live since ~5:40, and its full
+  795-frame pass completes at about **8:53** — inside this section. Say "a
+  complete pass, zero events" *after* that moment; before it, say "two minutes so
+  far". This is the strongest honest claim in the demo, so time it.
 
 Then state the honest limit: **"This shows the rules do not fire on normal
 activity. It does not prove zero false positives in every scene; boundary
@@ -351,7 +359,7 @@ production WSGI server with authentication.
 | Demo capacities | West 8, Centre 7, East 6 |
 | Demo rules | warning 0.6, alert 1.5 s, dwell 30 s, cooldown 30 s |
 | Measured FPS | 5–7 live, ~9.5 worker-only, 4–4.5 each with two servers, 5–9 offline |
-| One pass | ~60 s crowd clip, ~3.2 min baseline while both run |
+| One pass | ~60 s crowd clip (~80 s with both servers), ~3.2 min baseline while both run |
 | Tests | 19 passing (`pytest -q`) |
 | Clear log | Event log → **Clear** → confirm |
 | Reset everything | restart with `--reset` |

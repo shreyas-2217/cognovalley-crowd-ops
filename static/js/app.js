@@ -56,6 +56,7 @@
     filter: "all",
     selectedZone: null,
     layers: { zones: true, heat: false },
+    startedAt: Date.now(),
     lastStatsAt: 0,
     lastChartTs: 0,
   };
@@ -570,7 +571,11 @@
   }
 
   function checkStale() {
-    if (state.lastStatsAt && Date.now() - state.lastStatsAt > STALE_MS) {
+    // Use startedAt as the baseline when no stats ever arrived, so a page
+    // opened against a stopped server does not keep the initial "LIVE"
+    // badge from index.html forever.
+    const last = state.lastStatsAt || state.startedAt;
+    if (Date.now() - last > STALE_MS) {
       document.body.classList.add("stale");
       // renderStats() only runs on a successful poll, so without this the
       // badge would keep the last "LIVE" it rendered after the server dies.
