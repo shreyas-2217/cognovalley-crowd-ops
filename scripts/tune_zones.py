@@ -1,7 +1,7 @@
 """Offline zone tuning: replay a clip at the demo frame rate and report
 per-zone count percentiles, dwell times, and which rules fire.
 
-Usage: python scripts/tune_zones.py path\to\config.json
+Usage: python scripts/tune_zones.py configs/demo.json
 """
 
 from __future__ import annotations

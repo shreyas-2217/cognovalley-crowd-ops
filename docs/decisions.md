@@ -200,8 +200,9 @@ out of sync with the event timestamps.
 discards the extra frames before reading the one it processes. With
 `target_fps = 10` and a 30 fps source, two frames are skipped.
 
-**Why.** The clip advances at roughly wall-clock speed, so a 35 s pass lasts about
-35 s on screen and dwell timers match what the viewer sees.
+**Why.** Frame skipping keeps playback in the same order of magnitude as wall
+clock, so a 35 s pass lasts about a minute on this CPU rather than five minutes,
+and dwell timers roughly match what the viewer sees.
 
 **Cost.** Two thirds of the source frames are never detected; a person visible for
 only one or two source frames can be missed. FPS is reported honestly as the
@@ -307,7 +308,7 @@ coursework project with two known configs this is acceptable.
 
 ## Summary of trade-offs to state honestly
 
-- ~6–9 FPS on the development laptop, not 30 FPS.
+- ~5–7 FPS on the development laptop, not 30 FPS.
 - Density and speed are perspective-biased by a single scale factor.
 - No MOTA/IDF1 evaluation; detection quality is assessed visually.
 - MOT17 clip is non-commercial; YOLO is AGPL-3.0.

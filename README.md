@@ -88,8 +88,8 @@ shipped JSON configs.
 
 | Run | Clip | What should happen |
 | --- | --- | --- |
-| `configs/demo.json` | `demo-crowd.webm` — night pedestrian street, 960×540, 30 fps, 35 s | 14–16 people in zones on average. Within one 35 s pass: 2–4 occupancy events (West lane warning, Centre lane capacity, Centre lane warning). Dwell events after ~30 s of continuous presence. Heat map concentrates on the two walking lanes. |
-| `configs/normal.json` | `normal-corridor.avi` — quiet corridor, 768×576, 10 fps, 79.5 s | 0 events, occupancy around 4–7, every lane stays `ok`. Demonstrates that thresholds do not fire on normal activity. |
+| `configs/demo.json` | `demo-crowd.webm` — night pedestrian street, 960×540, 30 fps, 35 s | 14–16 people in zones on average (p50 14, p90 16, peak ~21). A full pass raises warning and capacity events in all three lanes, plus a dwell event after ~30 s of continuous presence. The count depends on how fast the pass runs, because the 30 s cooldown is wall-clock time: about 6 events in a 60 s live pass. Heat map concentrates on the two walking lanes. |
+| `configs/normal.json` | `normal-corridor.avi` — quiet corridor, 768×576, 10 fps, 79.5 s | 0 events, occupancy p50 5 / p90 6 / max 8, every lane stays `ok`. Demonstrates that thresholds do not fire on normal activity. |
 
 ![Baseline run: the same dashboard, live, with zero events](docs/assets/normal-baseline.png)
 
@@ -102,16 +102,21 @@ Notes that keep the demo honest:
 - Exact event timing varies with CPU load and where the loop starts.
 
 Measured on the development laptop (Intel Core i5-1035G1, 4 cores / 8 threads,
-CPU-only, 1280×720 processing):
+CPU-only, 1280×720 processing), with a normal browser already open:
 
 | Condition | Measured |
 | --- | --- |
-| Worker + dashboard open in Chrome | **6–9 FPS** |
-| Worker with no browser attached | ~8.8 FPS |
-| Offline replay, no JPEG encoding or Flask | 11–13 FPS |
+| Worker + dashboard open in Chrome | **5–7 FPS** |
+| Worker with no browser attached | **~6 FPS** |
+| Two servers at once (demo + baseline) | **~3 FPS each** |
+| Offline replay, no JPEG encoding or Flask | **5–9 FPS** |
 
 The target is 10 processed frames per second; the UI shows the measured value,
-not the target. At ~8 FPS the video is close to real time but not smooth.
+not the target. The pipeline skips two of every three source frames, so at 6 FPS
+the 35 s demo clip takes about **60 s** to play through — roughly 1.7× slower than
+real time. The 79.5 s baseline clip takes closer to 2.5 minutes. An idle machine
+with Chrome closed reached ~8.8 FPS in earlier runs; anything else running on the
+CPU shows up directly in this number.
 
 ## How it works
 
@@ -218,9 +223,9 @@ Full clip attribution: [`data/clips/CREDITS.md`](data/clips/CREDITS.md).
 - **No tracking accuracy metric.** The project does not report MOTA/IDF1
   because the bundled clips have no small hand-labelled evaluation split;
   detection quality is assessed visually. Do not claim benchmark accuracy.
-- **CPU throughput.** 6–9 FPS with the dashboard open on the development laptop.
-  The pipeline skips source frames to keep playback near real time; it is not a
-  30 FPS live system.
+- **CPU throughput.** 5–7 FPS with the dashboard open on the development laptop.
+  The pipeline skips source frames to keep playback near real time; a 35 s clip
+  still takes about a minute, so it is not a 30 FPS live system.
 - **Perspective bias.** `pixels_per_meter` is a single fixed scale. People far
   from the camera appear smaller, so density and speed are biased by depth.
   A production system would calibrate a homography per camera.

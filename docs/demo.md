@@ -46,7 +46,7 @@ open as a PDF or image in a third tab, and the README open in an editor.
 7. Open <http://127.0.0.1:5000> and let it run for at least 60 seconds. Check:
 
    - status badge says **LIVE**, not OFFLINE;
-   - FPS settles around **6–9**;
+   - FPS settles around **5–7**;
    - occupancy is roughly **10–18**;
    - boxes follow people and the three lanes are visible.
 
@@ -56,11 +56,18 @@ open as a PDF or image in a third tab, and the README open in an editor.
    python -m app.main --config configs\normal.json --port 5001 --reset
    ```
 
-   Open <http://127.0.0.1:5001> and confirm **0 events**, occupancy **4–7**.
+   Open <http://127.0.0.1:5001> and confirm **0 events**, occupancy around
+   **4–8**.
+
+   **Two inference workers share this CPU.** With both running, each drops to
+   roughly **3 FPS**, so the crowd tab looks sluggish during the baseline section.
+   Either start the baseline only at 8:00 and let it warm up while you talk, or
+   stop the crowd server before starting it. Do not run both if you plan to quote
+   a frame rate.
 
 9. Leave both tabs open. Do not leave the crowd tab running for many minutes
    before you start: the event log will fill and the clip will loop. If it does,
-   press **Clear** in the event log and let one fresh 35 s pass run.
+   press **Clear** in the event log and let one fresh pass run (~60 s).
 
 ---
 
@@ -122,7 +129,7 @@ Do this in order; each item is visible on screen.
 3. **Zone panel.** "West lane, Centre lane, East lane. Each has a capacity. The
    bar is count over capacity; the status changes from ok to warning to
    capacity."
-4. **Heat map.** Toggle it with the **Heat** control (or open `/#heat`). "This is
+4. **Heat map.** Toggle it with the **Heatmap** control (or open `/#heat`). "This is
    a 32 by 18 accumulator that fades over about four seconds and adds one at each
    person's centre. It shows where the crowd concentrates over time, not just
    this frame."
@@ -133,15 +140,18 @@ Do this in order; each item is visible on screen.
    operator sees." Open the snapshot.
 7. **Clear and fresh pass.** Press **Clear**, confirm. "The log, the evidence
    images and the session counter reset, so we can show a clean run." Let one
-   35 s pass play.
+   pass play — about **60 s** at the measured frame rate, not 35 s.
 
 Expected within one fresh pass of the 35 s clip:
 
-- occupancy p50 around **14**, p90 around **16**, peak in the low 20s;
-- **2–4 occupancy events**: West lane warning, Centre lane capacity, Centre lane
-  warning (order and timing depend on where the loop starts);
-- a **dwell** event after roughly 30 s of continuous presence;
-- FPS **6–9** with this tab open.
+- occupancy p50 around **14**, p90 around **16–17**, peak in the low 20s;
+- **warning and capacity events in all three lanes**, plus a **dwell** event after
+  roughly 30 s of continuous presence. Order depends on where the loop starts;
+- about **6 events** in the first minute. The count is not fixed: the 30 s
+  cooldown is wall-clock, so a slow pass fires more events than a fast one;
+- FPS **5–7** with this tab open;
+- one pass takes about **60 s** at 6 FPS, because the worker runs below its
+  10 FPS target and skips two of every three source frames.
 
 Say: **"The thresholds are in `configs/demo.json`, not in the code. The same
 engine runs the next clip with different numbers."**
@@ -159,9 +169,9 @@ Say:
 
 Point at:
 
-- status **LIVE**, occupancy around **4–7**;
+- status **LIVE**, occupancy around **4–8** (p50 5, max 8 in testing);
 - every zone status **ok**;
-- **0 events** after a full pass.
+- **0 events** after a full pass — about **2.5 minutes** at the measured rate.
 
 Then state the honest limit: **"This shows the rules do not fire on normal
 activity. It does not prove zero false positives in every scene; boundary
@@ -186,7 +196,7 @@ call. Everything else is geometry and rules, which is why it is testable."**
 
 Say:
 
-> "Known limits: about 6 to 9 FPS on this CPU, so it is near real time but not
+> "Known limits: about 5 to 7 FPS on this CPU, so it is near real time but not
 > smooth. Density and speed use one fixed pixel-to-metre scale, so they are
 > biased by perspective. There is no MOTA or IDF1 evaluation because the clips
 > have no hand-labelled split. The MOT17 clip is non-commercial and YOLO is
@@ -245,8 +255,11 @@ python scripts\tune_zones.py configs\normal.json
 ## Q&A preparation
 
 **"Is this real time?"**
-Near real time. It processes about 6–9 frames per second on this CPU and skips
-source frames so the 35 s clip plays in roughly 35 s. It is not a 30 FPS system.
+Not quite. It processes about 5–7 frames per second on this CPU against a target
+of 10, and skips two of every three source frames, so the 35 s crowd clip takes
+roughly a minute to play through — about 1.7× slower than real time. It is not a
+30 FPS system, and it would not keep up with a live camera at full frame rate.
+Asked bluntly: near real time, but noticeably slow motion.
 
 **"How accurate is it?"**
 Detection and tracking quality are assessed visually; there is no MOTA/IDF1
@@ -308,7 +321,8 @@ production WSGI server with authentication.
 | Baseline clip | `data/clips/normal-corridor.avi` (768×576, 10 fps, 79.5 s) |
 | Demo capacities | West 8, Centre 7, East 6 |
 | Demo rules | warning 0.6, alert 1.5 s, dwell 30 s, cooldown 30 s |
-| Measured FPS | ~6–9 live, ~11–13 offline replay |
+| Measured FPS | ~5–7 live, ~5–9 offline replay (CPU dependent) |
+| One pass | ~60 s crowd clip, ~2.5 min baseline |
 | Tests | 19 passing (`pytest -q`) |
 | Clear log | Event log → **Clear** → confirm |
 | Reset everything | restart with `--reset` |

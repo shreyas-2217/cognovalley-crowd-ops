@@ -6,6 +6,9 @@
     return document.getElementById(id);
   };
 
+  // How long without a stats reply before the UI admits the server is gone.
+  const STALE_MS = 4000;
+
   const els = {
     statusDot: $("statusDot"),
     sourceName: $("sourceName"),
@@ -122,7 +125,7 @@
         renderStats(stats);
       })
       .catch(function () {
-        if (state.lastStatsAt && Date.now() - state.lastStatsAt > 3500) {
+        if (state.lastStatsAt && Date.now() - state.lastStatsAt > STALE_MS) {
           document.body.classList.add("stale");
         }
       });
@@ -567,8 +570,14 @@
   }
 
   function checkStale() {
-    if (state.lastStatsAt && Date.now() - state.lastStatsAt > 4000) {
+    if (state.lastStatsAt && Date.now() - state.lastStatsAt > STALE_MS) {
       document.body.classList.add("stale");
+      // renderStats() only runs on a successful poll, so without this the
+      // badge would keep the last "LIVE" it rendered after the server dies.
+      els.statusDot.className = "status-dot offline";
+      els.railHealth.style.background = "var(--crit)";
+      els.liveBadge.classList.add("offline");
+      els.liveText.textContent = "OFFLINE";
     }
   }
 
