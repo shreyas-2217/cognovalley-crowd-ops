@@ -59,15 +59,16 @@ open as a PDF or image in a third tab, and the README open in an editor.
    python -m app.main --config configs\normal.json --port 5001 --reset
    ```
 
-   Open <http://127.0.0.1:5001> after ~15 s (same cold start) and confirm
-   **0 events**, occupancy around
+   Open <http://127.0.0.1:5001> after **15–20 s** (cold start is slower with the
+   demo worker already running) and confirm **0 events**, occupancy around
    **4–8**.
 
-   **Two inference workers share this CPU.** With both running, each drops to
-   roughly **3 FPS**, so the crowd tab looks sluggish during the baseline section.
-   Either start the baseline only at 8:00 and let it warm up while you talk, or
-   stop the crowd server before starting it. Do not run both if you plan to quote
-   a frame rate.
+   **Two inference workers share this CPU.** Measured with both running:
+   **4.0–4.5 FPS each**, down from 5–7 for the demo alone, and a baseline pass
+   stretches to **~3.2 minutes**. So do not cold-start it at 8:00 and wait for a
+   full pass — it will not finish inside a 2-minute section. Start it at **7:00**
+   instead, once the crowd pass has ended, and it will have run about two and a
+   half clean minutes by the time you switch to it.
 
 9. Leave both tabs open. Do not leave the crowd tab running for many minutes
    before you start: the event log will fill and the clip will loop. If it does,
@@ -151,14 +152,29 @@ Expected within one fresh pass of the 35 s clip:
 - occupancy p50 around **14**, p90 around **16–17**, peak in the low 20s;
 - **warning and capacity events in all three lanes**, plus a **dwell** event after
   roughly 30 s of continuous presence. Order depends on where the loop starts;
-- about **6 events** in the first minute. The count is not fixed: the 30 s
-  cooldown is wall-clock, so a slow pass fires more events than a fast one;
+- about **6 events** in the first minute is the *typical* figure, not a promise:
+  a 60 s window ranged from **1 to 7** live, and a full pass produced **7** on a
+  quiet machine and **16** when loaded. The first event after a Clear arrived in
+  **7.9 s**. State a range, not an exact number.
 - FPS **5–7** with this tab open;
 - one pass takes about **60 s** at 6 FPS, because the worker runs below its
-  10 FPS target and skips two of every three source frames.
+  10 FPS target and skips two of every three source frames. Wait for the pass to
+  end before the next section, or the Clear demo will not have shown a full loop.
 
 Say: **"The thresholds are in `configs/demo.json`, not in the code. The same
 engine runs the next clip with different numbers."**
+
+**Cue at 7:00 — after the fresh pass finishes, start the baseline** (second
+terminal):
+
+```powershell
+python -m app.main --config configs\normal.json --port 5001 --reset
+```
+
+It needs 15–20 s to warm up and about three minutes for a full pass, so starting
+it once the crowd pass has ended is what makes the 8:00 section honest without
+stretching the pass to ~81 s. The demo tab drops to ~4.3 FPS from here; you have
+already quoted the FPS number.
 
 ### 8:00–10:00 — Baseline / false-positive check (tab 5001)
 
@@ -175,23 +191,28 @@ Point at:
 
 - status **LIVE**, occupancy around **4–8** (p50 5, max 8 in testing);
 - every zone status **ok**;
-- **0 events** after a full pass — about **2.5 minutes** at the measured rate.
+- **0 events** in the ~2.5 minutes it has been running since 7:00. A complete
+  795-frame pass takes **~3.2 minutes** at this shared frame rate and produced
+  **0 events** in every full-pass test, live and offline. Say "no events in two
+  and a half minutes of running" — do not claim a finished pass you did not watch
+  finish.
 
 Then state the honest limit: **"This shows the rules do not fire on normal
 activity. It does not prove zero false positives in every scene; boundary
 flicker and occlusion can still produce a count change."**
 
-### 10:00–11:30 — Code walkthrough (30–60 seconds per file)
+### 10:00–11:30 — Code walkthrough (three files, ~30 s each)
 
-Open these files and point at one function each; do not scroll randomly.
+90 seconds does not fit four files at 30–60 s. Do these three; mention the fourth
+in one sentence if time is left.
 
 1. `app/zones.py` — `ZoneEngine.update()`: point-in-polygon on box centres.
 2. `app/rules.py` — `RuleEngine.evaluate()`: the duration timer and the cooldown
    check.
 3. `app/camera_worker.py` — the loop: read, skip, detect, update, evaluate,
    snapshot, publish under the lock.
-4. `static/js/app.js` — `renderStats()` or the polling function: plain DOM writes,
-   no framework.
+4. *(only if ahead)* `static/js/app.js` — `renderStats()`: plain DOM writes, no
+   framework.
 
 If asked "where is the AI?", answer: **"`app/detector.py`, one `model.track()`
 call. Everything else is geometry and rules, which is why it is testable."**
@@ -325,8 +346,8 @@ production WSGI server with authentication.
 | Baseline clip | `data/clips/normal-corridor.avi` (768×576, 10 fps, 79.5 s) |
 | Demo capacities | West 8, Centre 7, East 6 |
 | Demo rules | warning 0.6, alert 1.5 s, dwell 30 s, cooldown 30 s |
-| Measured FPS | ~5–7 live, ~5–9 offline replay (CPU dependent) |
-| One pass | ~60 s crowd clip, ~2.5 min baseline |
+| Measured FPS | 5–7 live, ~9.5 worker-only, 4–4.5 each with two servers, 5–9 offline |
+| One pass | ~60 s crowd clip, ~3.2 min baseline while both run |
 | Tests | 19 passing (`pytest -q`) |
 | Clear log | Event log → **Clear** → confirm |
 | Reset everything | restart with `--reset` |

@@ -89,7 +89,7 @@ shipped JSON configs.
 
 | Run | Clip | What should happen |
 | --- | --- | --- |
-| `configs/demo.json` | `demo-crowd.webm` — night pedestrian street, 960×540, 30 fps, 35 s | 14–16 people in zones on average (p50 14, p90 16, peak ~21). A full pass raises warning and capacity events in all three lanes, plus a dwell event after ~30 s of continuous presence. The count depends on how fast the pass runs, because the 30 s cooldown is wall-clock time: about 6 events in a 60 s live pass. Heat map concentrates on the two walking lanes. |
+| `configs/demo.json` | `demo-crowd.webm` — night pedestrian street, 960×540, 30 fps, 35 s | 14–16 people in zones on average (p50 14, p90 16, peak ~21). Over a full pass the lanes raise warning and capacity events, plus a dwell event after ~30 s of continuous presence. Event count is **not fixed**: 1–7 in a given 60 s window, 7–16 per full pass depending on CPU load, because the 30 s cooldown is wall-clock time and the crowd peaks at different points. After a Clear the first event arrived in **7.9 s**. Heat map concentrates on the two walking lanes. |
 | `configs/normal.json` | `normal-corridor.avi` — quiet corridor, 768×576, 10 fps, 79.5 s | 0 events, occupancy p50 5 / p90 6 / max 8, every lane stays `ok`. Demonstrates that thresholds do not fire on normal activity. |
 
 ![Baseline run: the same dashboard, live, with zero events](docs/assets/normal-baseline.png)
@@ -103,20 +103,22 @@ Notes that keep the demo honest:
 - Exact event timing varies with CPU load and where the loop starts.
 
 Measured on the development laptop (Intel Core i5-1035G1, 4 cores / 8 threads,
-CPU-only, 1280×720 processing), with a normal browser already open:
+CPU-only, 1280×720 processing). Each row is the condition stated in it; the
+spread comes from whatever else is running.
 
 | Condition | Measured |
 | --- | --- |
-| Worker + dashboard open in Chrome | **5–7 FPS** |
-| Worker with no browser attached | **~6 FPS** |
-| Two servers at once (demo + baseline) | **~3 FPS each** |
-| Offline replay, no JPEG encoding or Flask | **5–9 FPS** |
+| Worker + dashboard open in Chrome | **5–7 FPS** (5.1–6.9) |
+| Worker with no browser attached | **~9.5 FPS** (8.9–10.0) |
+| Two servers at once (demo + baseline) | **~4–4.5 FPS each** |
+| Offline replay, no JPEG encoding or Flask | **5–9 FPS** (8.6 on a quiet machine) |
 
 The target is 10 processed frames per second; the UI shows the measured value,
 not the target. The pipeline skips two of every three source frames, so at 6 FPS
 the 35 s demo clip takes about **60 s** to play through — roughly 1.7× slower than
-real time. The 79.5 s baseline clip takes closer to 2.5 minutes. An idle machine
-with Chrome closed reached ~8.8 FPS in earlier runs; anything else running on the
+real time. With nothing attached it reaches the 10 FPS target and a pass takes
+about **37 s**. The 79.5 s baseline clip takes about 2.5 minutes alone, or
+**3–3.5 minutes** while the demo worker is also running. Anything else using the
 CPU shows up directly in this number.
 
 ## How it works
