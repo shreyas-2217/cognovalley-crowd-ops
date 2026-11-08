@@ -13,7 +13,7 @@ open as a PDF or image in a third tab, and the README open in an editor.
 3. Open PowerShell in the project folder and activate the environment:
 
    ```powershell
-   cd "C:\Users\user\Documents\Default Project\cognovalley-crowd-ops"
+   cd "C:\Users\user\Documents\cogno valley internship"
    .venv\Scripts\Activate.ps1
    ```
 
