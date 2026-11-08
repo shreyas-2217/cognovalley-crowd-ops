@@ -37,7 +37,8 @@ python -m app.main --config configs\demo.json --port 5000 --reset
 ```
 
 Open <http://127.0.0.1:5000>. The first run downloads `yolo11n.pt` (about 5 MB)
-if it is not already in the project root.
+if it is not already in the project root. Give it **~15 s**: Flask answers after
+about 8 s, and the first annotated frame arrives around 15 s.
 
 Normal-activity baseline on a second port:
 

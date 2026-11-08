@@ -43,6 +43,9 @@ open as a PDF or image in a third tab, and the README open in an editor.
    python -m app.main --config configs\demo.json --port 5000 --reset
    ```
 
+   Measured cold start: Flask answers after **~8 s** and the first annotated
+   frame is ready at **~15 s**. Start it before you need it on screen.
+
 7. Open <http://127.0.0.1:5000> and let it run for at least 60 seconds. Check:
 
    - status badge says **LIVE**, not OFFLINE;
@@ -56,7 +59,8 @@ open as a PDF or image in a third tab, and the README open in an editor.
    python -m app.main --config configs\normal.json --port 5001 --reset
    ```
 
-   Open <http://127.0.0.1:5001> and confirm **0 events**, occupancy around
+   Open <http://127.0.0.1:5001> after ~15 s (same cold start) and confirm
+   **0 events**, occupancy around
    **4–8**.
 
    **Two inference workers share this CPU.** With both running, each drops to
