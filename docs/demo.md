@@ -78,6 +78,11 @@ open as a PDF or image in a third tab, and the README open in an editor.
 
 ## Run of show
 
+The quoted lines total about **370 words, roughly 2.5 minutes of speech**. The
+other nine minutes are screen work, pointing and explanation, so rehearse against
+a timer rather than reading this top to bottom. Each slot below says what must be
+on screen at that moment.
+
 ### 0:00–1:00 — Opening
 
 Say:
@@ -221,12 +226,11 @@ call. Everything else is geometry and rules, which is why it is testable."**
 
 Say:
 
-> "Known limits: about 5 to 7 FPS on this CPU, so it is near real time but not
-> smooth. Density and speed use one fixed pixel-to-metre scale, so they are
-> biased by perspective. There is no MOTA or IDF1 evaluation because the clips
-> have no hand-labelled split. The MOT17 clip is non-commercial and YOLO is
-> AGPL-3.0; both are documented. Next steps would be per-camera homography, a
-> multi-camera aggregator and a production WSGI server."
+> "Known limits: 5 to 7 FPS, so near real time but not smooth. Density uses one
+> fixed pixel-to-metre scale, so perspective biases it. No MOTA or IDF1, because
+> the clips have no labels. The MOT17 clip is non-commercial and YOLO is
+> AGPL-3.0, both documented. Next: per-camera homography and a multi-camera
+> aggregator."
 
 Close with the value sentence: **"It turns passive camera footage into a small,
 evidence-backed list of things an operator should look at."**
