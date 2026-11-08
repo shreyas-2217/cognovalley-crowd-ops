@@ -301,7 +301,7 @@ body.stale .status-dot {
 
 .workspace {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) 226px;
+  grid-template-rows: minmax(0, 1fr) clamp(176px, 23vh, 240px);
   gap: 13px;
   padding: 13px 15px 15px;
   min-height: 0;
@@ -319,6 +319,8 @@ body.stale .status-dot {
   flex-direction: column;
   gap: 12px;
   min-height: 0;
+  /* Never let a short viewport push cards on top of each other. */
+  overflow: hidden;
 }
 
 /* ---------- panels ---------- */
@@ -329,6 +331,13 @@ body.stale .status-dot {
   border-radius: var(--radius);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.025) inset,
+    0 22px 44px -30px rgba(0, 0, 0, 0.9);
+}
+
+.panel-flash {
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 0 34px -8px rgba(34, 211, 238, 0.55),
     0 22px 44px -30px rgba(0, 0, 0, 0.9);
 }
 
@@ -393,7 +402,7 @@ h2 {
 .video-wrap {
   position: relative;
   width: calc(100% - 28px);
-  max-width: calc((100vh - 410px) * 16 / 9);
+  max-width: calc((75vh - 170px) * 16 / 9);
   aspect-ratio: 16 / 9;
   margin: 0 auto 14px;
   border-radius: 12px;
@@ -656,6 +665,7 @@ h2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+  flex: 0 0 auto;
 }
 
 .kpi {
@@ -695,7 +705,11 @@ h2 {
 /* ---------- zones ---------- */
 
 .zones-panel {
-  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 92px;
+  overflow: hidden;
 }
 
 .zone-list {
@@ -703,6 +717,8 @@ h2 {
   flex-direction: column;
   gap: 11px;
   padding: 0 15px 14px;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: auto;
 }
 
@@ -796,8 +812,8 @@ h2 {
 .chart-panel {
   display: flex;
   flex-direction: column;
-  min-height: 150px;
-  flex: 1;
+  flex: 0 0 clamp(146px, 18vh, 196px);
+  min-height: 0;
 }
 
 .chart-wrap {
@@ -983,6 +999,32 @@ h2 {
 }
 
 /* ---------- responsive ---------- */
+
+@media (max-height: 820px) {
+  .workspace {
+    grid-template-rows: minmax(0, 1fr) clamp(160px, 22vh, 210px);
+  }
+
+  .side {
+    gap: 10px;
+  }
+
+  .chart-panel {
+    flex-basis: 136px;
+  }
+
+  .kpi {
+    padding: 9px 11px;
+  }
+
+  .kpi-value {
+    font-size: 22px;
+  }
+
+  .kpi-note {
+    font-size: 8.5px;
+  }
+}
 
 @media (max-width: 1180px) {
   .main-grid {

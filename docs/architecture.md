@@ -83,7 +83,7 @@ Let a zone polygon have `n` pixel-space vertices and area
 | **Density** | `occupancy / (A_px / pixels_per_meter²)`, in people/m². |
 | **Dwell** | For each `(track_id, zone)` pair, `now - first_seen_at`. The timer is deleted when the track leaves the zone, so re-entry restarts it. `avg_dwell` averages over tracks currently inside; `max_dwell` is the largest current dwell. |
 | **Speed** | For each track inside, `hypot(dx, dy) / dt / pixels_per_meter`, averaged. The previous centre is kept per track and dropped after 3 s without a sighting. |
-| **Heat grid** | A 32×18 accumulator. Every processed frame decays all cells by 0.5%, then adds 1 at each track centre. Cells are normalized by the current peak, so the published grid is always 0–1. |
+| **Heat grid** | A 32×18 accumulator. Every frame decays all cells with a 4-second time constant (half the weight every ~2.8 s), then adds 1 at each track centre. Cells are normalized by the current peak, so the published grid is always 0–1 and the glow follows the people currently on screen. |
 
 Density and speed assume one fixed `pixels_per_meter`. This is a deliberate
 simplification: it is explainable and testable, but not perspective-correct. See

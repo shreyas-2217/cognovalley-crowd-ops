@@ -8,6 +8,7 @@ inference.
 from __future__ import annotations
 
 import copy
+import math
 import threading
 import time
 from pathlib import Path
@@ -23,6 +24,9 @@ from app.zones import Track, ZoneEngine
 
 HEAT_COLS = 32
 HEAT_ROWS = 18
+# Seconds for a cell to fade to 1/e of its weight. Short enough that the map
+# follows the people currently on screen instead of turning into a full-frame wash.
+HEAT_TAU_SECONDS = 4.0
 BOX_COLOR_BGR = (238, 211, 34)  # cyan
 TEXT_COLOR = (240, 248, 255)
 
@@ -55,6 +59,7 @@ class CameraWorker:
         self._fps = 0.0
         self._events_total = store.count()
         self._heat = np.zeros((HEAT_ROWS, HEAT_COLS), dtype=np.float32)
+        self._heat_at: float | None = None
         self._stats = self._empty_stats("starting")
 
     def _empty_stats(self, status: str) -> dict:
@@ -191,10 +196,14 @@ class CameraWorker:
         )
         return filename
 
-    def _update_heatmap(self, tracks: list[Track], frame_w: int, frame_h: int) -> list[float]:
-        # Slow decay keeps a visible trail of recent movement: at ~7 fps a cell
-        # loses half its weight roughly every 20 seconds.
-        self._heat *= 0.995
+    def _update_heatmap(
+        self, tracks: list[Track], frame_w: int, frame_h: int, now: float
+    ) -> list[float]:
+        # Time-based decay keeps the trail the same length at any frame rate:
+        # cells hold a person's recent positions, then fade over a few seconds.
+        elapsed = 0.0 if self._heat_at is None else max(0.0, now - self._heat_at)
+        self._heat_at = now
+        self._heat *= math.exp(-elapsed / HEAT_TAU_SECONDS)
         for track in tracks:
             col = min(HEAT_COLS - 1, max(0, int(track.cx / max(1, frame_w) * HEAT_COLS)))
             row = min(HEAT_ROWS - 1, max(0, int(track.cy / max(1, frame_h) * HEAT_ROWS)))
@@ -305,7 +314,7 @@ class CameraWorker:
                 self.store.add(event, snapshot)
                 self._events_total += 1
 
-            heat_values = self._update_heatmap(tracks, frame_w, frame_h)
+            heat_values = self._update_heatmap(tracks, frame_w, frame_h, now)
 
             ok, buffer = cv2.imencode(
                 ".jpg", annotated, [int(cv2.IMWRITE_JPEG_QUALITY), jpeg_quality]

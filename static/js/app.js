@@ -39,6 +39,10 @@
     clearEvents: $("clearEvents"),
     eventsPanel: $("eventsPanel"),
     railEvents: $("railEvents"),
+    railLive: $("railLive"),
+    railZones: $("railZones"),
+    videoPanel: document.querySelector(".video-panel"),
+    zonesPanel: document.querySelector(".zones-panel"),
   };
 
   const state = {
@@ -67,14 +71,40 @@
     bindZoneSelection();
     bindVideoRetry();
     bindClearEvents();
+    bindRail();
     applyHashLayers();
-
-    els.railEvents.addEventListener("click", function () {
-      els.eventsPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
 
     fetchStats();
     fetchEvents();
+  }
+
+  /* ---------- navigation ---------- */
+
+  function focusPanel(button, panel) {
+    Array.prototype.forEach.call(
+      document.querySelectorAll(".rail-item"),
+      function (item) {
+        item.classList.toggle("active", item === button);
+      }
+    );
+    if (!panel) return;
+    panel.classList.add("panel-flash");
+    window.setTimeout(function () {
+      panel.classList.remove("panel-flash");
+    }, 1400);
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function bindRail() {
+    els.railLive.addEventListener("click", function () {
+      focusPanel(els.railLive, els.videoPanel);
+    });
+    els.railEvents.addEventListener("click", function () {
+      focusPanel(els.railEvents, els.eventsPanel);
+    });
+    els.railZones.addEventListener("click", function () {
+      focusPanel(els.railZones, els.zonesPanel);
+    });
   }
 
   /* ---------- data ---------- */
