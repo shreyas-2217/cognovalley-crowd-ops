@@ -48,6 +48,26 @@ python -m app.main --config configs\normal.json --port 5001 --reset
 `--reset` deletes stored events and evidence images so a rehearsal or the live
 demo starts from zero. Without it, the log survives restarts.
 
+### Bring your own clip
+
+`--source` overrides the configured video file, so the same pipeline runs on any
+local recording. Pass an absolute path and the single-zone config:
+
+```powershell
+python -m app.main --config configs\any-clip.json --source "C:\Videos\my-clip.mp4"
+```
+
+`configs/any-clip.json` uses one zone covering the whole frame, because the demo
+lanes are drawn for the night-street camera and would sit in the wrong place on a
+different scene. Occupancy then means "people on screen", and events are written
+to a separate `data/any-clip.db` so a custom run never mixes with the demo log.
+For a fixed camera you control, edit `zones` in the JSON instead — see
+[Configuration](#configuration).
+
+Any format OpenCV can decode works (MP4/H.264, AVI, WebM). A webcam index such as
+`--source 0` also works where OpenCV can open the device. The input is letterboxed
+to 16:9, so the zone overlay stays aligned whatever the source aspect ratio.
+
 ### Offline replay (no browser, prints expected results)
 
 ```powershell
@@ -61,7 +81,8 @@ python scripts\tune_zones.py configs\normal.json
 pytest -q
 ```
 
-11 tests cover rule timing/cooldowns, zone geometry and the SQLite store.
+19 tests cover rule timing/cooldowns, zone geometry, the SQLite store and the
+shipped JSON configs.
 
 ## Demo scenario and expected results
 
@@ -127,7 +148,7 @@ Key design choices:
 
 | Key | Meaning |
 | --- | --- |
-| `source` | Video file path (a webcam index such as `0` also works with OpenCV) |
+| `source` | Video file path (a webcam index such as `0` also works with OpenCV). Override at launch with `--source <path>` |
 | `camera.name` | Title shown in the dashboard header |
 | `zones[]` | `name`, normalized `polygon` points (0–1), `capacity`, RGB `color` |
 | `detector.conf` / `min_box_height` | Detection confidence and minimum person-box height in pixels |
@@ -165,7 +186,7 @@ Key design choices:
 | `static/` | Dashboard: HTML, CSS, vanilla JS, vendored Chart.js |
 | `scripts/tune_zones.py` | Offline clip replay: per-zone percentiles and fired events |
 | `tests/` | Pytest unit tests |
-| `configs/` | Demo and baseline configurations |
+| `configs/` | Demo, baseline and single-zone ("any clip") configurations |
 | `docs/` | Architecture, decisions, demo script, screenshots |
 
 ## Licences and credits

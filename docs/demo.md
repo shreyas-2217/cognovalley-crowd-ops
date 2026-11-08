@@ -237,7 +237,8 @@ python scripts\tune_zones.py configs\normal.json
 | FPS collapses below 4 | Close other Chrome tabs and apps; the worker is CPU-bound. Do not claim a higher number. |
 | Dashboard shows OFFLINE | The stats poll has missed 4 s. Check the terminal; restart with `--reset`. |
 | Everything fails live | Run the offline replay commands, then show `docs/assets/dashboard-desktop.png`, `docs/assets/normal-baseline.png` and the architecture diagram. Explain the results from the replay output. |
-| Asked for a webcam | Explain the clip is used for reproducibility and fair timing; a webcam index can be set as `source` in the config, but it is not the demo path. |
+| Asked for a webcam | Explain the clip is used for reproducibility and fair timing; a webcam index can be set as `source` in the config or passed as `--source 0`, but it is not the demo path. |
+| Asked to analyse their own clip | `python -m app.main --config configs\any-clip.json --source "<absolute path>"`. Explain that the single full-frame zone is used because the demo lanes are camera-specific, and that it writes to a separate database. |
 
 ---
 
@@ -302,11 +303,12 @@ production WSGI server with authentication.
 | Baseline dashboard | <http://127.0.0.1:5001> |
 | Crowd config | `configs/demo.json` |
 | Baseline config | `configs/normal.json` |
+| Any local clip | `configs\any-clip.json` + `--source "<absolute path>"` |
 | Crowd clip | `data/clips/demo-crowd.webm` (960×540, 30 fps, 35 s) |
 | Baseline clip | `data/clips/normal-corridor.avi` (768×576, 10 fps, 79.5 s) |
 | Demo capacities | West 8, Centre 7, East 6 |
 | Demo rules | warning 0.6, alert 1.5 s, dwell 30 s, cooldown 30 s |
 | Measured FPS | ~6–9 live, ~11–13 offline replay |
-| Tests | 11 passing (`pytest -q`) |
+| Tests | 19 passing (`pytest -q`) |
 | Clear log | Event log → **Clear** → confirm |
 | Reset everything | restart with `--reset` |

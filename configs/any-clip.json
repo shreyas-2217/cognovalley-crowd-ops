@@ -1,0 +1,34 @@
+{
+  "source": "data/clips/demo-crowd.webm",
+  "camera": {"name": "Camera · Custom clip"},
+  "zones": [
+    {
+      "name": "Frame",
+      "polygon": [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
+      "capacity": 20,
+      "color": [34, 211, 238]
+    }
+  ],
+  "detector": {
+    "model": "yolo11n.pt",
+    "conf": 0.35,
+    "iou": 0.50,
+    "min_box_height": 24
+  },
+  "rules": {
+    "warning_ratio": 0.75,
+    "alert_seconds": 3.0,
+    "dwell_seconds": 60.0,
+    "cooldown_seconds": 60.0
+  },
+  "video": {
+    "width": 1280,
+    "jpeg_quality": 82,
+    "target_fps": 10,
+    "pixels_per_meter": 60
+  },
+  "storage": {
+    "db_path": "data/any-clip.db",
+    "snapshot_dir": "data/snapshots"
+  }
+}
