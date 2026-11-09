@@ -217,8 +217,7 @@ flicker and occlusion can still produce a count change."**
 ### 10:00–11:30 — Code walkthrough (three files, ~30 s each)
 
 90 seconds does not fit four files at 30–60 s. Do these three; mention the fourth
-in one sentence if time is left. `docs/code-walkthrough.md` has the line-by-line
-detail and a drill for each of these.
+in one sentence if time is left.
 
 1. `app/zones.py` — `ZoneEngine.update()`: point-in-polygon on box centres.
 2. `app/rules.py` — `RuleEngine.evaluate()`: the duration timer and the cooldown
