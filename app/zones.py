@@ -23,7 +23,6 @@ class Track:
     y1: float
     x2: float
     y2: float
-    conf: float = 1.0
 
     @property
     def cx(self) -> float:
@@ -33,17 +32,12 @@ class Track:
     def cy(self) -> float:
         return (self.y1 + self.y2) / 2.0
 
-    @property
-    def height(self) -> float:
-        return self.y2 - self.y1
-
 
 @dataclass
 class Zone:
     name: str
     polygon: list[tuple[float, float]]
     capacity: int
-    color: tuple[int, int, int]
 
 
 @dataclass
@@ -52,10 +46,8 @@ class ZoneStats:
     count: int
     capacity: int
     density: float
-    avg_dwell: float
     max_dwell: float
     velocity: float
-    polygon_px: list[tuple[int, int]]
 
 
 def point_in_polygon(x: float, y: float, polygon_px: Sequence[tuple[int, int]]) -> bool:
@@ -75,7 +67,6 @@ class ZoneEngine:
                 name=str(zone["name"]),
                 polygon=[(float(px), float(py)) for px, py in zone["polygon"]],
                 capacity=int(zone.get("capacity", 10)),
-                color=tuple(zone.get("color", (34, 211, 238))),  # type: ignore[arg-type]
             )
             for zone in zones
         ]
@@ -149,10 +140,8 @@ class ZoneEngine:
                 count=len(inside),
                 capacity=zone.capacity,
                 density=round(density, 2),
-                avg_dwell=round(sum(dwells) / len(dwells), 1) if dwells else 0.0,
                 max_dwell=round(max(dwells), 1) if dwells else 0.0,
                 velocity=round(sum(speeds) / len(speeds), 2) if speeds else 0.0,
-                polygon_px=polygon,
             )
 
         for track in tracks:

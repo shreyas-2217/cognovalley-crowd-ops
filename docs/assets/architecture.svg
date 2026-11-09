@@ -40,7 +40,7 @@
 
   <rect x="40" y="404" width="220" height="104" rx="12" fill="#0b1219" stroke="#1c2a37" stroke-dasharray="4 3"/>
   <text x="58" y="428" fill="#22d3ee" font-family="Segoe UI, Inter, sans-serif" font-size="9.5" font-weight="700" letter-spacing="1.4">CONFIGURATION</text>
-  <text x="58" y="450" fill="#c8d6e2" font-family="Consolas, monospace" font-size="10.5">zones · capacity · colors</text>
+  <text x="58" y="450" fill="#c8d6e2" font-family="Consolas, monospace" font-size="10.5">zones · capacity · polygons</text>
   <text x="58" y="468" fill="#c8d6e2" font-family="Consolas, monospace" font-size="10.5">warning_ratio · alert_seconds</text>
   <text x="58" y="486" fill="#c8d6e2" font-family="Consolas, monospace" font-size="10.5">dwell_seconds · cooldown</text>
   <text x="58" y="500" fill="#c8d6e2" font-family="Consolas, monospace" font-size="10.5">target_fps · pixels_per_meter</text>

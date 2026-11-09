@@ -8,12 +8,11 @@ def make_zone() -> dict:
         "name": "Test Zone",
         "polygon": [[0.25, 0.25], [0.75, 0.25], [0.75, 0.75], [0.25, 0.75]],
         "capacity": 3,
-        "color": [0, 255, 0],
     }
 
 
 def make_track(track_id: int, cx: float, cy: float) -> Track:
-    return Track(track_id, cx - 5, cy - 5, cx + 5, cy + 5, 0.9)
+    return Track(track_id, cx - 5, cy - 5, cx + 5, cy + 5)
 
 
 def test_point_in_polygon_inside_outside_and_edge() -> None:

@@ -158,7 +158,7 @@ Key design choices:
 | --- | --- |
 | `source` | Video file path (a webcam index such as `0` also works with OpenCV). Override at launch with `--source <path>` |
 | `camera.name` | Title shown in the dashboard header |
-| `zones[]` | `name`, normalized `polygon` points (0–1), `capacity`, RGB `color` |
+| `zones[]` | `name`, normalized `polygon` points (0–1), `capacity` |
 | `detector.conf` / `min_box_height` | Detection confidence and minimum person-box height in pixels |
 | `rules.warning_ratio` | Fraction of capacity that counts as a warning |
 | `rules.alert_seconds` | How long a condition must hold before an event is written |

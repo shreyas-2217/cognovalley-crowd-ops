@@ -55,7 +55,6 @@ class PersonDetector:
                 continue
 
             track_id = int(ids[index].item()) if ids is not None else -1
-            confidence = float(box.conf[0].item())
-            tracks.append(Track(track_id, x1, y1, x2, y2, confidence))
+            tracks.append(Track(track_id, x1, y1, x2, y2))
 
         return tracks

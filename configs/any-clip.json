@@ -5,8 +5,7 @@
     {
       "name": "Frame",
       "polygon": [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
-      "capacity": 20,
-      "color": [34, 211, 238]
+      "capacity": 20
     }
   ],
   "detector": {

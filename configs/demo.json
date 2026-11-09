@@ -5,20 +5,17 @@
     {
       "name": "West lane",
       "polygon": [[0.02, 0.02], [0.32, 0.02], [0.32, 0.98], [0.02, 0.98]],
-      "capacity": 8,
-      "color": [34, 211, 238]
+      "capacity": 8
     },
     {
       "name": "Centre lane",
       "polygon": [[0.34, 0.02], [0.62, 0.02], [0.62, 0.98], [0.34, 0.98]],
-      "capacity": 7,
-      "color": [56, 189, 248]
+      "capacity": 7
     },
     {
       "name": "East lane",
       "polygon": [[0.64, 0.02], [0.98, 0.02], [0.98, 0.98], [0.64, 0.98]],
-      "capacity": 6,
-      "color": [45, 212, 191]
+      "capacity": 6
     }
   ],
   "detector": {

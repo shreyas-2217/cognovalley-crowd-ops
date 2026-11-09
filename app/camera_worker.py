@@ -69,7 +69,6 @@ class CameraWorker:
                 "count": 0,
                 "capacity": int(zone.get("capacity", 10)),
                 "density": 0.0,
-                "avg_dwell": 0.0,
                 "max_dwell": 0.0,
                 "velocity": 0.0,
                 "status": "ok",
@@ -106,10 +105,6 @@ class CameraWorker:
         if self._thread is not None:
             self._thread.join(timeout=3.0)
 
-    def get_frame(self) -> bytes | None:
-        with self._lock:
-            return self._jpeg
-
     def get_frame_with_id(self) -> tuple[int, bytes | None]:
         with self._lock:
             return self._frame_id, self._jpeg
@@ -123,6 +118,13 @@ class CameraWorker:
             self._events_total = 0
             self._stats = copy.deepcopy(self._stats)
             self._stats["events_total"] = 0
+
+    def _add_events(self, count: int) -> None:
+        """Count new events under the same lock that reset_events_total() uses."""
+        if count <= 0:
+            return
+        with self._lock:
+            self._events_total += count
 
     def _set_state(self, jpeg: bytes, stats: dict) -> None:
         with self._lock:
@@ -238,7 +240,6 @@ class CameraWorker:
                     "count": count,
                     "capacity": capacity,
                     "density": stats.density if stats else 0.0,
-                    "avg_dwell": stats.avg_dwell if stats else 0.0,
                     "max_dwell": stats.max_dwell if stats else 0.0,
                     "velocity": stats.velocity if stats else 0.0,
                     "status": status,
@@ -312,7 +313,7 @@ class CameraWorker:
             for event in events:
                 snapshot = self._save_snapshot(annotated, event, now)
                 self.store.add(event, snapshot)
-                self._events_total += 1
+            self._add_events(len(events))
 
             heat_values = self._update_heatmap(tracks, frame_w, frame_h, now)
 

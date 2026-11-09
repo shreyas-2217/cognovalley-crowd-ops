@@ -81,7 +81,7 @@ Let a zone polygon have `n` pixel-space vertices and area
 | --- | --- |
 | **Occupancy** | Number of tracks whose box **centre** is inside the polygon (`cv2.pointPolygonTest >= 0`). |
 | **Density** | `occupancy / (A_px / pixels_per_meter²)`, in people/m². |
-| **Dwell** | For each `(track_id, zone)` pair, `now - first_seen_at`. The timer is deleted when the track leaves the zone, so re-entry restarts it. `avg_dwell` averages over tracks currently inside; `max_dwell` is the largest current dwell. |
+| **Dwell** | For each `(track_id, zone)` pair, `now - first_seen_at`. The timer is deleted when the track leaves the zone, so re-entry restarts it. `max_dwell` is the largest dwell among the tracks currently inside. |
 | **Speed** | For each track inside, `hypot(dx, dy) / dt / pixels_per_meter`, averaged. The previous centre is kept per track and dropped after 3 s without a sighting. |
 | **Heat grid** | A 32×18 accumulator. Every frame decays all cells with a 4-second time constant (half the weight every ~2.8 s), then adds 1 at each track centre. Cells are normalized by the current peak, so the published grid is always 0–1 and the glow follows the people currently on screen. |
 
@@ -137,7 +137,6 @@ Events carry: `ts`, `zone`, `type`, `severity`, `message`, `count`.
       "count": 5,
       "capacity": 8,
       "density": 0.1,
-      "avg_dwell": 6.2,
       "max_dwell": 9.4,
       "velocity": 0.4,
       "status": "ok",

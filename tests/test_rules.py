@@ -8,10 +8,8 @@ def zone(count: int, capacity: int = 2, max_dwell: float = 0.0) -> ZoneStats:
         count=count,
         capacity=capacity,
         density=0.0,
-        avg_dwell=max_dwell,
         max_dwell=max_dwell,
         velocity=0.0,
-        polygon_px=[],
     )
 
 

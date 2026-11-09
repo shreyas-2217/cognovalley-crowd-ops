@@ -50,7 +50,6 @@ def test_zone_polygons_are_normalized(path: Path) -> None:
         for x, y in points:
             assert 0.0 <= float(x) <= 1.0, f"{zone['name']} x out of range"
             assert 0.0 <= float(y) <= 1.0, f"{zone['name']} y out of range"
-        assert len(zone["color"]) == 3
 
 
 def test_any_clip_config_covers_the_whole_frame() -> None:
