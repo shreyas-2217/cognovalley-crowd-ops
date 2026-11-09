@@ -248,4 +248,5 @@ Full clip attribution: [`data/clips/CREDITS.md`](data/clips/CREDITS.md).
 - [`docs/architecture.md`](docs/architecture.md) — data flow, thread model, state.
 - [`docs/decisions.md`](docs/decisions.md) — why this stack and these trade-offs.
 - [`docs/demo.md`](docs/demo.md) — 12-minute walkthrough and expected results.
+- [`docs/code-walkthrough.md`](docs/code-walkthrough.md) — line-by-line defence sheet and drills.
 - [`docs/assets/architecture.svg`](docs/assets/architecture.svg) — architecture diagram.
