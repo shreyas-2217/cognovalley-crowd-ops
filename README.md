@@ -121,8 +121,8 @@ spread comes from whatever else is running.
 
 | Condition | Measured |
 | --- | --- |
-| Worker + dashboard open in Chrome | **5–7 FPS** (5.1–6.9) |
-| Worker with no browser attached | **~9.5 FPS** (8.9–10.0) |
+| Worker + dashboard open in Chrome | **4–7 FPS** (3.6–6.9; lower when other apps are open) |
+| Worker with no browser attached | **~5–9.5 FPS** (4.2–10.0 depending on desktop load) |
 | Two servers at once (demo + baseline) | **~4–4.5 FPS each** |
 | Offline replay, no JPEG encoding or Flask | **5–9 FPS** (8.6 on a quiet machine) |
 
@@ -239,7 +239,8 @@ Full clip attribution: [`data/clips/CREDITS.md`](data/clips/CREDITS.md).
 - **No tracking accuracy metric.** The project does not report MOTA/IDF1
   because the bundled clips have no small hand-labelled evaluation split;
   detection quality is assessed visually. Do not claim benchmark accuracy.
-- **CPU throughput.** 5–7 FPS with the dashboard open on the development laptop.
+- **CPU throughput.** 4–7 FPS with the dashboard open on the development laptop,
+  less when other applications compete for the CPU.
   The pipeline skips source frames to keep playback near real time; a 35 s clip
   still takes about a minute, so it is not a 30 FPS live system.
 - **Perspective bias.** `pixels_per_meter` is a single fixed scale. People far

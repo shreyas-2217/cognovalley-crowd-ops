@@ -193,7 +193,7 @@ On the development laptop (i5-1035G1, 4 cores / 8 threads):
 | Zone geometry + rules | sub-millisecond |
 | Browser polling + chart | negligible (JSON only) |
 
-That yields 5–7 FPS with the dashboard open, ~9.5 FPS with no browser attached,
+That yields 4–7 FPS with the dashboard open, 5–9.5 FPS with no browser attached,
 4–4.5 FPS per worker when two run at once, and 5–9 FPS offline, depending on what
 else is using the CPU. The target of 10 FPS is a pacing target, not a guarantee,
 so a pass through the 35 s clip takes about a minute with the dashboard open.

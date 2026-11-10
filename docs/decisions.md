@@ -308,7 +308,7 @@ coursework project with two known configs this is acceptable.
 
 ## Summary of trade-offs to state honestly
 
-- ~5–7 FPS on the development laptop, not 30 FPS.
+- ~4–7 FPS on the development laptop, not 30 FPS.
 - Density and speed are perspective-biased by a single scale factor.
 - No MOTA/IDF1 evaluation; detection quality is assessed visually.
 - MOT17 clip is non-commercial; YOLO is AGPL-3.0.

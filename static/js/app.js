@@ -254,7 +254,7 @@
           " p/m²</span><span>dwell " +
           formatNumber(zone.max_dwell, 0) +
           "s</span><span>" +
-          formatNumber(zone.velocity, 1) +
+          formatNumber(zone.velocity, 2) +
           " m/s</span></div>" +
           "</div>"
         );

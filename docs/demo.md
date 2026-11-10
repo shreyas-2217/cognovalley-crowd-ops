@@ -49,7 +49,7 @@ open as a PDF or image in a third tab, and the README open in an editor.
 7. Open `http://127.0.0.1:5000` in a browser and let it run for at least 60 seconds. Check:
 
    - status badge says **LIVE**, not OFFLINE;
-   - FPS settles around **5–7**;
+   - FPS settles around **4–7**;
    - occupancy is roughly **10–18**;
    - boxes follow people and the three lanes are visible.
 
@@ -140,7 +140,7 @@ Do this in order; each item is visible on screen.
 1. **Video panel.** "These boxes are drawn server-side. The ID above each box
    comes from ByteTrack. The yellow tint marks the zones."
 2. **KPI row.** Point out current occupancy, peak, alert count and measured FPS.
-   Say the measured FPS out loud, e.g. "about 7 frames per second on this CPU".
+   Say the measured FPS out loud, e.g. "about 5 frames per second on this CPU".
    Do it now, before 5:20: the number drops to ~4.3 once the baseline starts.
 3. **Zone panel.** "West lane, Centre lane, East lane. Each has a capacity. The
    bar is count over capacity; the status changes from ok to warning to
@@ -168,7 +168,7 @@ Expected within one fresh pass of the 35 s clip:
   a 60 s window ranged from **1 to 7** live, and a full pass produced **7** on a
   quiet machine and **16** when loaded. The first event after a Clear arrived in
   **7.9 s**. State a range, not an exact number.
-- FPS **5–7** with this tab open *and the demo alone* — it drops to ~4.3 once
+- FPS **4–7** with this tab open *and the demo alone* — it drops to ~4.3 once
   the baseline starts at 5:20, so **quote the FPS number before 5:20**;
 - one pass takes about **60 s** at 6 FPS, or **~80 s** while both workers run,
   because the worker processes below its 10 FPS target and skips two of every
@@ -234,7 +234,7 @@ call. Everything else is geometry and rules, which is why it is testable."**
 
 Say:
 
-> "Known limits: 5 to 7 FPS, so near real time but not smooth. Density uses one
+> "Known limits: 4 to 7 FPS, so near real time but not smooth. Density uses one
 > fixed pixel-to-metre scale, so perspective biases it. No MOTA or IDF1, because
 > the clips have no labels. The MOT17 clip is non-commercial and YOLO is
 > AGPL-3.0, both documented. Next: per-camera homography and a multi-camera
@@ -292,7 +292,7 @@ python scripts\tune_zones.py configs\normal.json
 ## Q&A preparation
 
 **"Is this real time?"**
-Not quite. It processes about 5–7 frames per second on this CPU against a target
+Not quite. It processes about 4–7 frames per second on this CPU against a target
 of 10, and skips two of every three source frames, so the 35 s crowd clip takes
 roughly a minute to play through — about 1.7× slower than real time. It is not a
 30 FPS system, and it would not keep up with a live camera at full frame rate.
@@ -358,7 +358,7 @@ production WSGI server with authentication.
 | Baseline clip | `data/clips/normal-corridor.avi` (768×576, 10 fps, 79.5 s) |
 | Demo capacities | West 8, Centre 7, East 6 |
 | Demo rules | warning 0.6, alert 1.5 s, dwell 30 s, cooldown 30 s |
-| Measured FPS | 5–7 live, ~9.5 worker-only, 4–4.5 each with two servers, 5–9 offline |
+| Measured FPS | 4–7 live, 5–9.5 worker-only, 4–4.5 each with two servers, 5–9 offline |
 | One pass | ~60 s crowd clip (~80 s with both servers), ~3.2 min baseline while both run |
 | Tests | 19 passing (`pytest -q`) |
 | Clear log | Event log → **Clear** → confirm |
