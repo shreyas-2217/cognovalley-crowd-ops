@@ -1,20 +1,29 @@
-# Crowd Operations — CognoValley Track A
+# Crowd Operations
 
-Crowd-density and bottleneck analytics for a fixed camera. A background Python
-worker runs person detection and tracking on a video file, measures occupancy,
-density, dwell time and speed inside configurable zones, and raises debounced
-operator events. A dark-mode dashboard shows the annotated stream, live zone
-pressure, a heat map, a 60-second trend chart and an evidence-backed event log.
+Crowd-safety analytics for a fixed camera. Given a video feed and a set of zones
+drawn over it, it answers the three questions an operator actually asks during a
+busy event:
 
-Built for **Track A (crowd density and bottleneck analytics)** of the CognoValley
-internship scope. Everything runs locally on CPU: Flask, Ultralytics YOLO11n,
-ByteTrack, OpenCV, SQLite and plain HTML/CSS/JavaScript.
+- **How full is each area?** — live occupancy per lane, measured against capacity.
+- **Is anyone stuck?** — continuous dwell time for each person, per zone.
+- **Is the crowd starting to jam?** — average walking speed inside each zone.
+
+When one of those crosses a threshold and *stays* there, the system raises a
+debounced operator event and stores the annotated frame as evidence, so every
+alarm is auditable instead of being a number on a screen. A dark-mode dashboard
+shows the annotated stream, live zone pressure, a heat map, a 60-second trend
+chart and that evidence-backed event log.
+
+It runs entirely on CPU, locally: Flask, Ultralytics YOLO11n, ByteTrack,
+OpenCV, SQLite and plain HTML/CSS/JavaScript. No GPU, no cloud, no paid services.
+
+<sub>Track A (crowd density and bottleneck analytics) — CognoValley internship.</sub>
 
 ![Dashboard with live zones, heat map and operator KPI cards](docs/assets/dashboard-desktop.png)
 
-## What it demonstrates
+## Capabilities
 
-| Requirement | Where it lives |
+| Capability | Where it lives |
 | --- | --- |
 | Person detection + tracking | `app/detector.py` (YOLO11n + ByteTrack) |
 | Zone occupancy and dwell rules | `app/zones.py`, `app/rules.py` |
@@ -36,7 +45,7 @@ pip install -r requirements.txt
 python -m app.main --config configs\demo.json --port 5000 --reset
 ```
 
-Open <http://127.0.0.1:5000>. The first run downloads `yolo11n.pt` (about 5 MB)
+Open `http://127.0.0.1:5000` in a browser. The first run downloads `yolo11n.pt` (about 5 MB)
 if it is not already in the project root. Give it **~15 s**: Flask answers after
 about 8 s, and the first annotated frame arrives around 15 s.
 

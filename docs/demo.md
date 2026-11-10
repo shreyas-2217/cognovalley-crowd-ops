@@ -46,7 +46,7 @@ open as a PDF or image in a third tab, and the README open in an editor.
    Measured cold start: Flask answers after **~8 s** and the first annotated
    frame is ready at **~15 s**. Start it before you need it on screen.
 
-7. Open <http://127.0.0.1:5000> and let it run for at least 60 seconds. Check:
+7. Open `http://127.0.0.1:5000` in a browser and let it run for at least 60 seconds. Check:
 
    - status badge says **LIVE**, not OFFLINE;
    - FPS settles around **5–7**;
@@ -59,7 +59,7 @@ open as a PDF or image in a third tab, and the README open in an editor.
    python -m app.main --config configs\normal.json --port 5001 --reset
    ```
 
-   Open <http://127.0.0.1:5001> after **15–20 s** and confirm **0 events**,
+   Open `http://127.0.0.1:5001` after **15–20 s** and confirm **0 events**,
    occupancy around **4–8**, badge **LIVE**.
 
    **Then stop it again.** Two inference workers share this CPU and drop each
@@ -192,7 +192,7 @@ instead of ~60 s.
 
 ### 8:00–10:00 — Baseline / false-positive check (tab 5001)
 
-Switch to <http://127.0.0.1:5001>.
+Switch to the baseline tab: `http://127.0.0.1:5001`.
 
 Say:
 
@@ -349,8 +349,8 @@ production WSGI server with authentication.
 
 | Thing | Value |
 | --- | --- |
-| Crowd dashboard | <http://127.0.0.1:5000> |
-| Baseline dashboard | <http://127.0.0.1:5001> |
+| Crowd dashboard | `http://127.0.0.1:5000` |
+| Baseline dashboard | `http://127.0.0.1:5001` |
 | Crowd config | `configs/demo.json` |
 | Baseline config | `configs/normal.json` |
 | Any local clip | `configs\any-clip.json` + `--source "<absolute path>"` |
