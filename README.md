@@ -49,6 +49,10 @@ Open `http://127.0.0.1:5000` in a browser. The first run downloads `yolo11n.pt` 
 if it is not already in the project root. Give it **~15 s**: Flask answers after
 about 8 s, and the first annotated frame arrives around 15 s.
 
+> **There is no hosted demo, by design.** Inference runs on the CPU of whichever
+> machine holds the video file, so the address above only responds after you
+> start the server locally. Nothing is uploaded or sent to a third party.
+
 Normal-activity baseline on a second port:
 
 ```powershell
