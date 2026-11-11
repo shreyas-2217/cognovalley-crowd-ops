@@ -1,31 +1,20 @@
-"""Configuration defaults and a small JSON override loader.
+"""Configuration defaults and a small JSON override loader."""
 
-Every tunable value lives here so the panel can see that zones and
-thresholds are configuration, not hard-coded magic numbers.
-"""
-
-# TEACHING NOTE: defers evaluation of type hints like dict[str, Any].
 from __future__ import annotations
 
-import copy     # deepcopy so we never mutate the shared default dict
-import json     # read the override files in configs/
-from pathlib import Path    # cross-platform path handling
-from typing import Any      # type hint only
+import copy
+import json
+from pathlib import Path
+from typing import Any
 
-# __file__ is app/config.py. .parent is app/, .parent again is the project root.
-# Because it is derived from this file's location, the app works no matter
-# which directory the shell happens to be sitting in.
+# project root, derived from this file, so the app runs from any directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# A complete, working configuration. If no JSON file is supplied, the app still
-# runs on these values. Shipped configs override pieces of this.
+# a complete working default; configs/*.json is deep-merged on top
 DEFAULT_CONFIG: dict[str, Any] = {
-    # Video file to analyse, relative to BASE_DIR.
     "source": "data/clips/demo-crowd.webm",
-    # Free-text camera label shown in the dashboard header.
     "camera": {"name": "Camera 01 · Pedestrian street"},
-    # Each zone: a name, a NORMALISED polygon (0..1 of width/height), capacity.
     "zones": [
         {
             "name": "Gate A",
@@ -43,59 +32,49 @@ DEFAULT_CONFIG: dict[str, Any] = {
             "capacity": 12,
         },
     ],
-    # Detector settings, passed straight to PersonDetector.
     "detector": {
-        "model": "yolo11n.pt",   # weight file name
-        "conf": 0.40,            # minimum confidence
-        "iou": 0.50,             # NMS overlap threshold
-        "min_box_height": 36,    # ignore boxes shorter than this (distant/noise)
+        "model": "yolo11n.pt",
+        "conf": 0.40,
+        "iou": 0.50,
+        "min_box_height": 36,
     },
-    # Rule thresholds, passed straight to RuleEngine.
     "rules": {
-        "warning_ratio": 0.80,   # warn at 80% of capacity
-        "alert_seconds": 3.0,    # condition must hold this long
-        "dwell_seconds": 30.0,   # dwell event threshold
-        "cooldown_seconds": 15.0,  # min gap between same-kind events
+        "warning_ratio": 0.80,
+        "alert_seconds": 3.0,
+        "dwell_seconds": 30.0,
+        "cooldown_seconds": 15.0,
     },
-    # Output video settings.
     "video": {
-        "width": 1280,              # letterboxed output width (height is derived 16:9)
-        "jpeg_quality": 82,         # MJPEG compression quality
-        "target_fps": 12,           # cap on processed frames per second
-        "pixels_per_meter": 45,     # scale used for speed and density
+        "width": 1280,
+        "jpeg_quality": 82,
+        "target_fps": 12,
+        "pixels_per_meter": 45,
     },
-    # Where state is written.
     "storage": {
-        "db_path": "cognovalley.db",        # SQLite file
-        "snapshot_dir": "data/snapshots",   # evidence JPEGs
+        "db_path": "cognovalley.db",
+        "snapshot_dir": "data/snapshots",
     },
 }
 
 
 def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
     """Merge override into base without mutating either input."""
-    # Start from a full copy so the module-level DEFAULT_CONFIG is never touched.
     result = copy.deepcopy(base)
     for key, value in override.items():
-        # If both sides are dicts, merge recursively so you only need to specify
-        # the keys you want to change (e.g. just rules.cooldown_seconds).
+        # nested dicts merge key by key, so a config overrides only what it changes
         if isinstance(value, dict) and isinstance(result.get(key), dict):
             result[key] = _deep_merge(result[key], value)
         else:
-            # Anything else replaces wholesale. deepcopy so the caller's dict
-            # cannot be mutated through the result later.
             result[key] = copy.deepcopy(value)
     return result
 
 
 def load_config(path: str | Path | None = None) -> dict[str, Any]:
     """Return defaults, optionally overridden by a JSON file."""
-    # Always begin with a private copy of the defaults.
     config = copy.deepcopy(DEFAULT_CONFIG)
     if path is not None:
         config_path = Path(path)
-        # A relative path is interpreted from the project root, not the cwd,
-        # so "configs/demo.json" works from anywhere.
+        # relative config paths resolve from the project root, not the cwd
         if not config_path.is_absolute():
             config_path = BASE_DIR / config_path
         with open(config_path, "r", encoding="utf-8") as handle:
@@ -106,5 +85,5 @@ def load_config(path: str | Path | None = None) -> dict[str, Any]:
 def resolve_path(value: str | Path) -> Path:
     """Resolve a config path against the project root."""
     path = Path(value)
-    # Absolute paths are respected as-is; relative ones are anchored to BASE_DIR.
+    # absolute paths respected; relative ones anchored to the project root
     return path if path.is_absolute() else BASE_DIR / path
